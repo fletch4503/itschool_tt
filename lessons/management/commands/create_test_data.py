@@ -13,6 +13,7 @@ class Command(BaseCommand):
 
         # Получить существующие данные
         existing_courses = list(Course.objects.all())
+
         existing_subjects = list(Subject.objects.all())
         existing_teachers = list(Teacher.objects.all())
         existing_groups = list(Group.objects.all())

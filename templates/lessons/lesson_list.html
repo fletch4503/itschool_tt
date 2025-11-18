@@ -12,7 +12,7 @@
         <h1>Список уроков</h1>
 
         {% if task_id %}
-        <div id="task-status" hx-get="{% url 'task_status' task_id %}" hx-trigger="load, every 2s[!this.classList.contains('task-complete')]" hx-target="this" hx-swap="innerHTML">
+        <div id="task-status" hx-get="{% url 'task_status' task_id %}" hx-trigger="load, every 5s[!this.classList.contains('task-complete')]" hx-target="this" hx-swap="innerHTML">
             <p>Статус задачи: Загрузка...</p>
         </div>
         <script>
@@ -49,6 +49,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>id</th>
                     <th>Название</th>
                     <th>Описание</th>
                     <th>Предмет</th>
@@ -62,6 +63,7 @@
             <tbody id="lessons-tbody">
                 {% for lesson in lessons %}
                 <tr class="lesson-row" id="lesson-{{ lesson.pk }}">
+                    <td>{{ lesson.id }}</td>
                     <td>{{ lesson.title }}</td>
                     <td>{{ lesson.description|truncatewords:5 }}</td>
                     <td>{{ lesson.subject.name }}</td>

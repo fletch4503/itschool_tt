@@ -169,7 +169,7 @@ LOGGING = {
             "log_colors": {
                 "DEBUG": "white",
                 "INFO": "green",
-                "WARNING": "yellow",
+                "WARNING": "light_yellow",
                 "ERROR": "red",
                 "CRITICAL": "red,bg_white",
             },

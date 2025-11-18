@@ -1,6 +1,6 @@
 [project]
 dependencies = [
-  "black==25.11.0",
+  "black>=24.0,<25.11",
   "celery[redis]>=5.5.3",
   "django>=5.2.8",
   "django-browser-reload>=1.21.0",
@@ -11,6 +11,8 @@ dependencies = [
   "django-celery-results>=2.6.0",
   "colorlog>=6.10.1",
   "psycopg2-binary>=2.9.0",
+  "celery-types==0.23.0",
+  "ruff>=0.14.2",
 ]
 description = "Test Task 4 IT School"
 name = "itschooltt"

@@ -1,3 +1,4 @@
+from itschooltt.utils import log
 from django.core.management.base import BaseCommand
 from faker import Faker
 from lessons.models import Course, Group, Student, Teacher, Subject, Lesson
@@ -12,82 +13,153 @@ class Command(BaseCommand):
         fake = Faker("ru_RU")
 
         # Получить существующие данные
-        existing_courses = list(Course.objects.all())
+        # existing_courses = list(Course.objects.all())
+        existing_courses = [
+            "Математический анализ (продвинутый курс)",
+            "Математическая статистика и вероятностные модели",
+            "Квантовая физика и квантовые системы",
+            "Механика сплошных сред и гидродинамика",
+            "Вычислительные методы в физике и математике",
+            "Статистическая физика и кинетическая теория",
+            "Термодинамика макросистем",
+            "Специальная теория относительности",
+            "Теория вероятностей для физических задач",
+            "Математическая статистика и вероятностные модели",
+            "Оптимизация физических и инженерных систем",
+            "Комплексный анализ и его применения",
+            "Математические методы моделирования физических процессов",
+            "Физический эксперимент: методы и анализ",
+        ]
+        # existing_subjects = list(Subject.objects.all())
+        existing_subjects = [
+            "Теоретическая механика",
+            "Электродинамика",
+            "Оптика",
+            "Квантовая физика",
+            "Механика сплошных сред",
+            "Математический анализ",
+            "Комплексный анализ",
+            "Статистическая физика",
+            "Термодинамика",
+            "Теория относительности",
+            "Математическая статистика",
+            "Теория вероятностей",
+            "Методы оптимизации",
+            "Вычислительная математика",
+        ]
+        # existing_groups = list(Group.objects.all())
+        existing_groups = [
+            "М-6-25",
+            "Ф-4-25",
+            "М-2-24",
+            "Ф-1-24",
+            "Ф-2-24",
+            "Ф-3-23",
+            "М-6-24",
+            "Ф-4-24",
+            "Ф-1-23",
+            "Ф-3-23",
+            "Ф-2-23",
+            "М-2-23",
+        ]
+        titles = [
+            "Законы сохранения в механике и система отсчета",
+            "Цифровая обработка экспериментальных данных и анализ погрешностей",
+            "Цифровая обработка экспериментальных данных и анализ погрешностей",
+            "Методы оптимизации физических систем",
+            "Принцип вариации и уравнения Эйлера–Лагранжа",
+            "Случайные величины и законы больших чисел",
+            "Основы статистического моделирования и Монте-Карло методы",
+            "Теория относительности: преобразования Лоренца и эффекты времени",
+            "Фундаментальные понятия термодинамики: энергия, энтропия, температура",
+            "Модель идеального газа и распределение Максвелла",
+            "Применение комплексного анализа к задачам гидродинамики",
+            "Ряды Фурье и разложение сигналов",
+            "Численные методы интегрирования дифференциальных уравнений",
+            "Потенциальные и вихревые течения жидкости",
+            "Тензоры напряжений и деформаций в сплошных средах",
+            "Уравнение Шрёдингера для потенциала гармонического осциллятора",
+            "Принцип неопределенности Гейзенберга и его последствия",
+            "Квантование энергии в атомных системах",
+            "Интерференция и дифракция света",
+            "Уравнение Максвелла и распространение электромагнитных волн",
+            "Гармонические колебания и сложные резонансные системы",
+            "Законы сохранения в механике и система отсчета",
+        ]
+        desciptions = [
+             "Законы сохранения импульса, энергии, момента импульса и их применение.",
+             "Рассматриваются методы аппроксимации, фильтрации и оценки неопределенностей измерений.",
+             "Рассматриваются методы аппроксимации, фильтрации и оценки неопределенностей измерений.",
+             "Объясняются численные и аналитические методы нахождения экстремумов функций и функционалов.",
+             "Изучаются методы вариационного исчисления в задачах механики и физики.",
+             "Основные понятия вероятностной теории, интегральные характеристики распределений и сходимость.",
+             "Рассматриваются вероятностные подходы к моделированию сложных физических систем.",
+             "Разбираются базовые постулаты специальной теории относительности и физические следствия преобразований.",
+             "Обсуждаются первые два начала термодинамики, обратимые и необратимые процессы.",
+             "Изучаются основы кинетической теории, функции распределения скоростей и давление газа.",
+             "Использование аналитических функций для моделирования потоков идеальной жидкости.",
+             "Объясняется идея представления периодических функций в виде суммы гармоник, применение к анализу колебаний.",
+             "Описываются методы Эйлера, Рунге–Кутты и оценка погрешностей при численном решении задач.",
+             "Рассматриваются модели идеальной несжимаемой жидкости, линии тока и уравнения Бернулли.",
+             "Изучаются основные положения теории упругости, связь сил и деформаций через тензорные уравнения.",
+             "Решается основное уравнение квантовой механики, анализируются собственные значения и функции.",
+             "Обсуждается фундаментальное ограничение точности измерений и его влияние на физические модели.",
+             "Рассматриваются постулаты Бора, энергетические уровни атома водорода и первые шаги квантовой теории.",
+             "Разбираются волновые свойства света, условия интерференции, дифракционные решетки и методы измерения длины волны.",
+             "Анализируются фундаментальные уравнения электродинамики и их решения в виде плоских волн.",
+             "Изучаются свободные и вынужденные колебания, явление резонанса и демпфирования.",
+             "Рассматриваются законы сохранения импульса, энергии и момента импульса, а также их применение в различных системах отсчета.",
+        ]
 
-        existing_subjects = list(Subject.objects.all())
-        existing_teachers = list(Teacher.objects.all())
-        existing_groups = list(Group.objects.all())
-        existing_students = list(Student.objects.all())
-        existing_lessons = list(Lesson.objects.all())
-
-        if not existing_courses:
-            self.stdout.write(
-                self.style.WARNING(
-                    "No existing courses found. Run populate_data first."
-                )
-            )
-            return
-
-        # Создать дополнительные курсы на основе существующих
+        # Создать курсы
         for course in existing_courses:
-            for _ in range(2):
-                Course.objects.create(
-                    name=f"{course.name} - {fake.word().capitalize()}"
-                )
+            Course.objects.create(name=course)
+            log.info("Course created: %s", course)
+        # for _ in range(2):
+        #     Course.objects.create(
+        #         name=f"{course.name} - {fake.word().capitalize()}"
+        #     )
 
-        # Создать дополнительные предметы
+        # Предметы
         for subject in existing_subjects:
-            for _ in range(3):
-                Subject.objects.create(name=f"{subject.name} ({fake.word()})")
+            Subject.objects.create(name=subject)
+            log.info("Subject created: %s", subject)
+            # for _ in range(3):
+            #     Subject.objects.create(name=f"{subject.name} ({fake.word()})")
 
-        # Создать дополнительных преподавателей
-        for teacher in existing_teachers:
-            for _ in range(2):
-                Teacher.objects.create(
-                    name=fake.name(), email=f"{fake.user_name()}@{fake.domain_name()}"
-                )
+        # Преподаватели
+        teachers = []
+        for _ in range(5):
+            teacher = Teacher.objects.create(name=fake.name(), email=fake.email())
+            teachers.append(teacher)
 
-        # Обновить списки
-        all_courses = list(Course.objects.all())
-        all_subjects = list(Subject.objects.all())
-        all_teachers = list(Teacher.objects.all())
+        # Группы
+        for group in existing_groups:
+            Group.objects.create(name=group, course_id=random.randint(1, 14))
+            log.info("Group created: %s", group)
 
-        # Создать дополнительные группы
-        for course in all_courses:
-            existing_groups_for_course = [
-                g for g in existing_groups if g.course == course
-            ]
-            for _ in range(2):
-                Group.objects.create(
-                    name=f"{fake.word().capitalize()} {len(Group.objects.filter(course=course)) + 1}",
-                    course=course,
-                )
-
-        # Обновить группы
-        all_groups = list(Group.objects.all())
-
-        # Создать дополнительных студентов
-        for group in all_groups:
-            existing_students_in_group = [
-                s for s in existing_students if s.group == group
-            ]
-            for _ in range(5):
+        # Студенты
+        for group in existing_groups:
+            for _ in range(10):
                 Student.objects.create(
                     name=fake.name(), email=fake.email(), group=group
                 )
 
         # Обновить студентов
         all_students = list(Student.objects.all())
+        all_subjects = list(Subject.objects.all())
+        all_teachers = list(Teacher.objects.all())
+        all_groups = list(Group.objects.all())
 
         # Создать дополнительные уроки
-        for _ in range(50):
+        for _ in range(20):
             scheduled_at = fake.date_time_this_year()
             status = "completed" if scheduled_at < timezone.now() else "pending"
             duration = timezone.timedelta(hours=random.randint(1, 3))  # 1-3 часа
 
             lesson = Lesson.objects.create(
-                title=f"{random.choice(all_subjects).name} - {fake.sentence(nb_words=3)}",
-                description=fake.text(),
+                title=random.choice(titles),
+                description=random.choice(desciptions),
                 subject=random.choice(all_subjects),
                 teacher=random.choice(all_teachers),
                 group=random.choice(all_groups),
@@ -95,10 +167,6 @@ class Command(BaseCommand):
                 duration=duration,
                 status=status,
             )
-
-            # Добавить случайных студентов
-            students_to_add = random.sample(all_students, random.randint(5, 15))
-            lesson.students.set(students_to_add)
 
         self.stdout.write(
             self.style.SUCCESS("Test data created based on existing data")

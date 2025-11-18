@@ -13,6 +13,7 @@ dependencies = [
   "psycopg2-binary>=2.9.0",
   "celery-types==0.23.0",
   "ruff>=0.14.2",
+  "django-template-partials>=25.3",
 ]
 description = "Test Task 4 IT School"
 name = "itschooltt"

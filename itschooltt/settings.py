@@ -38,6 +38,7 @@ EXT_APPS = [
     "django_browser_reload",
     "django_celery_results",
     "django_htmx",
+    "template_partials",
 ]
 
 INSTALLED_APPS = (
@@ -52,6 +53,10 @@ INSTALLED_APPS = (
     + PROJECT_APPS
     + EXT_APPS
 )
+EXTRA_MIDDLEWARE = [
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
+]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -60,7 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
+] + EXTRA_MIDDLEWARE
 
 ROOT_URLCONF = "itschooltt.urls"
 
@@ -141,7 +146,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Celery Configuration
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+# CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

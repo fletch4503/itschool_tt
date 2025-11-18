@@ -1,53 +1,52 @@
 {% load static %}
+{% load partials %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Уроки</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <div class="container">
-        <h1>Список уроков</h1>
-
-        {% if task_id %}
-        <div id="task-status" hx-get="{% url 'task_status' task_id %}" hx-trigger="load, every 5s[!this.classList.contains('task-complete')]" hx-target="this" hx-swap="innerHTML">
-            <p>Статус задачи: Загрузка...</p>
-        </div>
-        <script>
-            document.addEventListener('htmx:afterSwap', function(e) {
-                if (e.detail.target.id === 'task-status' && e.detail.target.innerHTML.includes('Задача завершена')) {
-                    e.detail.target.classList.add('task-complete');
-                }
-            });
-        </script>
-        {% endif %}
-
-        <div class="form-section">
-            <h2>Создать новый урок</h2>
-            <form hx-post="{% url 'lesson_create' %}" hx-target="tbody" hx-swap="afterbegin" hx-on:htmx:after-request="this.reset()">
+    <div class="w-full px-0 py-1 pt-1">
+        {% include 'lessons/partials/task_status.html' %}
+        <div class="form-section gap-1">
+            <h2 class="text-xl font-bold text-gray-800">Создать новый урок</h2>
+            <form hx-post="{% url 'lesson_create' %}"
+                  hx-target="lessons-tbody"
+                  hx-indicator="#loading_bars"
+                  hx-swap="afterbegin"
+{#                  hx-on:after-request="this.reset()"#}
+            >
                 {% csrf_token %}
+                <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4 inline-block">
                 {% for field in form %}
-                    <div>
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+{#                    <div>#}
+                        <label class="label" for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {% if field.many_to_many %}
-                            <select multiple name="{{ field.name }}" id="{{ field.id_for_label }}" style="min-height: 80px;">
+                            <div class="join">
+                            <select multiple name="{{ field.name }}" id="{{ field.id_for_label }}" style="min-height: 150px;">
                                 {% for option_value, option_label in field.field.choices %}
                                     <option value="{{ option_value }}">{{ option_label }}</option>
                                 {% endfor %}
                             </select>
+                            </div>
                         {% else %}
                             {{ field }}
                         {% endif %}
-                    </div>
+{#                    </div>#}
                 {% endfor %}
-                <button type="submit">Создать урок</button>
+                <button class="btn btn-neutral mx-auto p-2" type="submit">Создать урок</button>
+                </fieldset>
+
             </form>
         </div>
-
-        <table>
-            <thead>
+        <h1 class="text-xl font-bold">Список уроков</h1>
+        <table class="table table-sm">
+            <thead class="text-sm text-medium">
                 <tr>
                     <th>id</th>
                     <th>Название</th>
@@ -60,7 +59,8 @@
                     <th>Действия</th>
                 </tr>
             </thead>
-            <tbody id="lessons-tbody">
+            <tbody class="text-sm text-medium" id="lessons-tbody">
+            {% partialdef lessons-tbody inline %}
                 {% for lesson in lessons %}
                 <tr class="lesson-row" id="lesson-{{ lesson.pk }}">
                     <td>{{ lesson.id }}</td>
@@ -93,6 +93,7 @@
                     <td colspan="8" style="text-align: center; color: #999;">Нет уроков</td>
                 </tr>
                 {% endfor %}
+            {% endpartialdef lessons-tbody %}
             </tbody>
         </table>
     </div>

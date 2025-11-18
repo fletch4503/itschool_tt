@@ -1,5 +1,4 @@
-from django.urls import path
-
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -9,6 +8,7 @@ urlpatterns = [
         "<int:pk>/complete/", views.LessonCompleteView.as_view(), name="lesson_complete"
     ),
     path(
-        "task-status/<str:task_id>/", views.TaskStatusView.as_view(), name="task_status"
+        "task-status/<str:task_id>/", views.task_status, name="task_status"
     ),
+    path("__reload__/", include("django_browser_reload.urls")),
 ]

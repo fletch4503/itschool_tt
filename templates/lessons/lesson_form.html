@@ -8,11 +8,9 @@
     </style>
 </head>
 <body>
-    <h1>Создать новый урок</h1>
-
+    <h1 class="text-xl text-centered">Создать новый урок</h1>
     <form method="post">
         {% csrf_token %}
-        
         {% if form.non_field_errors %}
             <div class="errorlist">
                 {% for error in form.non_field_errors %}
@@ -20,7 +18,6 @@
                 {% endfor %}
             </div>
         {% endif %}
-
         {% for field in form %}
             <div class="form-group">
                 {% if field.label %}
@@ -30,7 +27,7 @@
                 {% if field.field.widget.input_type == "checkbox" %}
                     <div>{{ field }}</div>
                 {% elif field.many_to_many %}
-                    <select multiple name="{{ field.name }}" id="{{ field.id_for_label }}">
+                    <select class="select" multiple name="{{ field.name }}" id="{{ field.id_for_label }}">
                         {% for option_value, option_label in field.field.choices %}
                             <option value="{{ option_value }}" {% if option_value in field.value %}selected{% endif %}>
                                 {{ option_label }}
@@ -40,21 +37,19 @@
                 {% else %}
                     {{ field }}
                 {% endif %}
-                
-                {% if field.errors %}
+                                {% if field.errors %}
                     <div class="errorlist">
                         {% for error in field.errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </div>
                 {% endif %}
-                
+
                 {% if field.help_text %}
                     <small>{{ field.help_text }}</small>
                 {% endif %}
             </div>
         {% endfor %}
-
         <button type="submit">Создать урок</button>
         <a href="{% url 'lesson_list' %}">Отмена</a>
     </form>

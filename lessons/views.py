@@ -1,14 +1,43 @@
+import time
+
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, View
-from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.contrib import messages
+from django.views.decorators.http import (
+    require_http_methods,
+    require_POST,
+    require_GET,
+)
 from django_htmx.http import HttpResponseClientRefresh
+from django_htmx.middleware import HtmxDetails
 from .models import Lesson
 from .forms import LessonForm
 from .tasks import create_lesson_task
 from celery.result import AsyncResult
+from itschooltt.utils import log
+from django.http import HttpResponse, HttpRequest
+from itschooltt.celery import current_app
+# from django.contrib import messages
 
+
+count_status = 0
+
+def counter(func):
+    global count_status
+    count_status = 0
+
+    def wrapper(*args, **kwargs):
+        wrapper.count_status += 1  # Увеличиваем счётчик при каждом вызове функции
+        logger.info(
+            f"Функция {func.__name__} была вызвана {wrapper.count_status} раз(а)"
+        )
+        return func(*args, **kwargs)
+
+    wrapper.count_status = 0  # Инициализируем счётчик
+    return wrapper
+
+class HtmxHttpRequest(HttpRequest):
+    htmx: HtmxDetails
 
 class LessonListView(ListView):
     model = Lesson
@@ -40,10 +69,14 @@ class LessonCreateView(CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        task = create_lesson_task.delay(self.object.id)
-        self.request.session["task_id"] = task.id
-        return response
-
+        try:
+            task = create_lesson_task.delay(self.object.id)
+            time.sleep(2)
+            self.request.session["task_id"] = task.id
+        except Exception as e:
+            log.error(f"Не получили результата из Celery c ошибкой: {e}")
+        # return response
+        return HttpResponseClientRefresh()
 
 class LessonCompleteView(UpdateView):
     model = Lesson
@@ -57,29 +90,47 @@ class LessonCompleteView(UpdateView):
         return HttpResponseClientRefresh()
 
 
-class TaskStatusView(View):
-    def get(self, request, task_id):
-        result = AsyncResult(task_id)
-        if result.state == "PENDING":
-            status = "Урок Создан"
-            is_complete = False
-        elif result.state == "PROGRESS":
-            status = result.info.get("status", "Отправляем уведомления ученикам")
-            is_complete = False
-        elif result.state == "SUCCESS":
-            status = "Уведомления отправлены"
-            is_complete = True
-            # Очищаем task_id из сессии когда задача завершена
-            if "task_id" in request.session:
-                del request.session["task_id"]
-        else:
-            status = "Ошибка"
-            is_complete = True
-            # Очищаем task_id из сессии при ошибке
-            if "task_id" in request.session:
-                del request.session["task_id"]
-        return render(
-            request,
-            "lessons/partials/task_status.html",
-            {"status": status, "is_complete": is_complete},
-        )
+# class TaskStatusView(View):
+#     def get(self, request, task_id):
+@counter
+@require_http_methods(["GET"])
+def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
+    global count_status
+    count_status += 1
+    task_id = request.GET.get("task_id") or task_id
+    template_name = "lessons/task_status.html"
+    if request.htmx:
+        log.warning("Итерация %s", count_status)
+        template_name += "#task-status-info"
+    res = AsyncResult(task_id, app=app)
+    log.warning("Текущий статус %s", res.state)
+    if res.state == "PENDING":
+        status = "Урок Создан"
+        is_complete = False
+    elif res.state == "PROGRESS":
+        status = res.info.get("status", "Отправляем уведомления ученикам")
+        is_complete = False
+    elif res.state == "SUCCESS":
+        status = "Уведомления отправлены"
+        is_complete = True
+        response["HX-Trigger"] = "success"
+        # Очищаем task_id из сессии когда задача завершена
+        if "task_id" in request.session:
+            del request.session["task_id"]
+        return HttpResponseClientRefresh()
+    else:
+        status = "Ошибка"
+        is_complete = True
+        response["HX-Trigger"] = "failure"
+        # Очищаем task_id из сессии при ошибке
+        if "task_id" in request.session:
+            del request.session["task_id"]
+    context = {
+        "task_id": task_id,
+        "task_result": count_status,
+        "HX-Trigger": "task_run",
+        "status": status,
+        "is_complete": is_complete,
+    }
+    response = render(request, template_name=template_name, context=context)
+    return response

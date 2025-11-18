@@ -47,16 +47,19 @@ class Command(BaseCommand):
 
         # Уроки
         import random
+        from django.utils import timezone
 
         for _ in range(20):
+            scheduled_at = fake.date_time_this_year()
+            status = "completed" if scheduled_at < timezone.now() else "pending"
             Lesson.objects.create(
                 title=fake.sentence(nb_words=4),
                 description=fake.text(),
                 subject=random.choice(subjects),
                 teacher=random.choice(teachers),
                 group=random.choice(groups),
-                scheduled_at=fake.date_time_this_year(),
-                status=random.choice(["pending", "created", "completed"]),
+                scheduled_at=scheduled_at,
+                status=status,
             )
 
         self.stdout.write(self.style.SUCCESS("Test data populated"))

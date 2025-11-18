@@ -53,6 +53,9 @@ class Lesson(models.Model):
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
     students = models.ManyToManyField(Student, blank=True)
     scheduled_at = models.DateTimeField()
+    duration = models.DurationField(
+        default="01:00:00"
+    )  # Длительность урока по умолчанию 1 час
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -1,0 +1,7 @@
+{% if not is_complete %}
+<div style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 3px; margin-bottom: 20px;">
+    <p>Статус: {{ status }}</p>
+</div>
+{% else %}
+<!-- Задача завершена, опрос прекращён -->
+{% endif %}

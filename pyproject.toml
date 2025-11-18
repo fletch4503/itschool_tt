@@ -1,14 +1,18 @@
 [project]
-name = "itschooltt"
-version = "0.1.0"
-description = "Test Task 4 IT School"
-requires-python = ">=3.13"
 dependencies = [
-    "black>=25.11.0",
-    "celery[redis]>=5.5.3",
-    "django>=5.2.8",
-    "django-htmx>=1.26.0",
-    "django-redis>=6.0.0",
-    "django-sendfile2>=0.7.2",
-    "faker>=38.0.0",
+  "black==25.11.0",
+  "celery[redis]>=5.5.3",
+  "django>=5.2.8",
+  "django-browser-reload>=1.21.0",
+  "django-redis>=6.0.0",
+  "django-htmx>=1.26.0",
+  "django-sendfile2>=0.7.2",
+  "faker>=38.0.0",
+  "django-celery-results>=2.6.0",
+  "colorlog>=6.10.1",
+  "psycopg2-binary>=2.9.0",
 ]
+description = "Test Task 4 IT School"
+name = "itschooltt"
+requires-python = ">=3.13"
+version = "0.1.0"

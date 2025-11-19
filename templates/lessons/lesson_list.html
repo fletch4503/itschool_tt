@@ -5,7 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Уроки</title>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{#    <script src="https://unpkg.com/htmx.org@1.9.10"></script>#}
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.js"
+            integrity="sha384-ksKjJrwjL5VxqAkAZAVOPXvMkwAykMaNYegdixAESVr+KqLkKE8XBDoZuwyWVUDv"
+            crossorigin="anonymous">
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
@@ -16,7 +20,7 @@
             <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок</h2>
             <div id="lesson-form-container">
                 {% include 'lessons/lesson_form.html' %}
-                {% include 'lessons/partials/task_status.html' %}
+{#                {% include 'lessons/partials/task_status.html' %}#}
             </div>
         </div>
         <h1 class="text-xl font-bold shadow-md pb-2">Список уроков</h1>

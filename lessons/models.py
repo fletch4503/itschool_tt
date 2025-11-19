@@ -52,7 +52,7 @@ class Lesson(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
     students = models.ManyToManyField(Student, blank=True)
-    scheduled_at = models.DateTimeField()
+    scheduled_at = models.DateTimeField(default="2026-02-12 12:00")
     duration = models.DurationField(
         default="01:00:00"
     )  # Длительность урока по умолчанию 1 час

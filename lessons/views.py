@@ -9,9 +9,8 @@ from django.views.generic import (
 )
 from django.urls import reverse_lazy
 from django.views.decorators.http import (
-    require_http_methods,
     # require_POST,
-    # require_GET,
+    require_GET,
 )
 from django_htmx.http import HttpResponseClientRefresh
 from django_htmx.middleware import HtmxDetails
@@ -20,7 +19,7 @@ from .forms import LessonForm
 from .tasks import create_lesson_task
 from celery.result import AsyncResult
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
-from itschooltt.celery import current_app as app
+from itschooltt.celery import current_app
 
 # from django.contrib import messages
 
@@ -80,46 +79,47 @@ class LessonCreateView(CreateView):
     #     return super().dispatch(request, *args, **kwargs)
     #
     def form_valid(self, form):
-        log.info("Form is valid, creating lesson")
         response = super().form_valid(form)
+        context = self.get_context_data(form=form)
         lessn_id = self.object.id
+        log.info(
+            "Form is valid, creating lesson: %s and context: %s", lessn_id, context
+        )
         try:
             task = create_lesson_task.delay(lessn_id)
-            time.sleep(2)
+            # time.sleep(2)
             self.request.session["task_id"] = task.id
         except Exception as e:
             log.error(f"Не получили результата из Celery c ошибкой: {e}")
         # if self.request.htmx:
-        task_id = self.request.session.get("task_id")
-        lessn = self.object
-        res = AsyncResult(task.id, app=app)
-        context = self.get_context_data(form=form)
+        res = AsyncResult(task.id, app=current_app)
         context = {
-            "task_id": task_id,
-            "lesson": lessn,
+            "task_id": task.id,
+            "lesson_id": lessn_id,
             "status": res.state,
             "HX-Trigger": "create_run",
         }
         log.warning("Передаем в форму контекст %s", context)
         response = render(
             self.request,
-            "lessons/partials/task_status.html#task-status-info",
+            "lessons/partials/task_status.html",
             context,
         )
         response["HX-Trigger"] = "create_run"
         self.request.session["task_id"] = task.id
         if res.state in ["PENDING", "PROGRESS"]:
             return HttpResponseRedirect(
-                reverse_lazy("task_status", kwargs={"task_id": task_id})
+                reverse_lazy("task_status", kwargs={"task_id": task.id})
             )
         else:
+            log.warning("Вышли из FormValid")
             return response
 
 
 # class TaskStatusView(View):
 #     def get(self, request, task_id):
 @counter
-@require_http_methods(["GET"])
+@require_GET
 def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     global count_status
     count_status += 1
@@ -128,7 +128,7 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     if request.htmx:
         log.warning("Итерация %s", count_status)
         template_name += "#task-status-info"
-    res = AsyncResult(task_id, app=app)
+    res = AsyncResult(task_id, app=current_app)
     log.warning("Текущий статус %s", res.state)
     context = {
         "task_id": task_id,
@@ -143,8 +143,6 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
         response = render(request, template_name=template_name, context=context)
         response["HX-Trigger"] = "success"
         # Очищаем task_id из сессии когда задача завершена
-        if "task_id" in request.session:
-            del request.session["task_id"]
         log.warning("Отправляем в форму контекст %s", context)
         return HttpResponseClientRefresh()
     elif res.state == "FAILURE":

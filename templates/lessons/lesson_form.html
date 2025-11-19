@@ -1,12 +1,8 @@
 {% load static %}
 {% load partials %}
-<form class="overflow-y-clip mb-2" id="create-lesson-form"
-      method="post"
+<form class="overflow-y-clip mb-2" method="post"
       hx-post="{% url 'lesson_create' %}"
-{#      hx-target="#lessons-tbody"#}
       hx-target="#task-status-info"
-      hx-indicator="#loading_bars"
-{#      hx-swap="afterbegin"#}
       hx-on:create_run="this.reset();"
       hx-swap="outerHTML"
     >
@@ -20,7 +16,7 @@
     {% endif %}
     <div class="form-column">
         {% for field in form %}
-            {% if field.name in 'title, description, scheduled_at, duration' %}
+            {% if field.name in 'title, subject, scheduled_at, group, teacher' %}
                 <div class="form-group">
                     {% if field.label %}
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -55,7 +51,8 @@
     </div>
     <div class="form-column">
         {% for field in form %}
-            {% if field.name in 'subject, teacher, group, students' %}
+            {% if field.name in 'description, duration' %}
+{#            {% if field.name in 'subject, teacher, group, students' %}#}
                 <div class="form-group">
                     {% if field.label %}
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -88,36 +85,8 @@
         {% endfor %}
     </div>
 </form>
-{#{% if lesson %}#}
-{#<tr class="lesson-row" id="lesson-{{ lesson.pk }}" hx-swap-oob="afterbegin:#lessons-tbody">#}
-{#    <td>{{ lesson.id }}</td>#}
-{#    <td>{{ lesson.title }}</td>#}
-{#    <td>{{ lesson.description|truncatewords:5 }}</td>#}
-{#    <td>{{ lesson.subject.name }}</td>#}
-{#    <td>{{ lesson.teacher.name }}</td>#}
-{#    <td>{{ lesson.group.name|default:"—" }}</td>#}
-{#    <td>{{ lesson.scheduled_at|date:"d.m.Y H:i" }}</td>#}
-{#    <td>#}
-{#        <span class="status-{{ lesson.status }}">#}
-{#            {{ lesson.get_status_display }}#}
-{#        </span>#}
-{#    </td>#}
-{#    <td>#}
-{#        <div class="actions">#}
-{#            {% if lesson.status == 'created' %}#}
-{#            <form hx-post="{% url 'lesson_complete' lesson.pk %}" hx-target="#lesson-{{ lesson.pk }}" hx-swap="outerHTML" style="margin: 0;">#}
-{#                {% csrf_token %}#}
-{#                <button type="submit" class="btn-complete">Завершить</button>#}
-{#            </form>#}
-{#            {% else %}#}
-{#            <button class="btn-complete" disabled>Завершить</button>#}
-{#            {% endif %}#}
-{#        </div>#}
-{#    </td>#}
-{#</tr>#}
-{#{% endif %}#}
-<div id="task-status-container">
-    {% if task_id %}
+<div id="task-status-container" class="mt-2">
+{#    {% if task_id %}#}
         {% include 'lessons/partials/task_status.html' %}
-    {% endif %}
+{#    {% endif %}#}
 </div>

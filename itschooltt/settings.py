@@ -169,32 +169,52 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "colored": {
+        "verbose": {
+            "format": "[%(asctime)s] %(module)s:%(lineno)d %(funcName)4s %(levelname)-3s %(message)s",
+            "datefmt": "%y-%m-%d %H:%M:%S",
+            # "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            # "style": "{",
+        },
+        "color_formatter": {
             "()": "colorlog.ColoredFormatter",
-            "format": "%(log_color)s%(levelname)s:%(name)s:%(message)s",
+            "format": "%(log_color)3s %(module)s:%(lineno)d %(levelname)-3s %(funcName)4s %(name)s -> %(message)4s",
+            # "format": "{asctime} {module}:{lineno} {funcName} {levelname} {message}",
+            "datefmt": "%y-%m-%d %H:%M:%S",
             "log_colors": {
-                "DEBUG": "white",
-                "INFO": "green",
-                "WARNING": "light_yellow",
+                "DEBUG": "cyan",
+                "INFO": "fg_green",
+                # light_black, light_red, light_green, light_yellow, light_blue, light_purple, light_cyan, light_white
+                # black, red, green, yellow, blue, purple, cyan, white
+                # fg_{color} — цвет переднего плана (текста) bg_{color} — цвет фона
+                "WARNING": "purple",
                 "ERROR": "red",
                 "CRITICAL": "red,bg_white",
             },
+            # "style": "{",
         },
     },
     "handlers": {
         "console": {
+            "level": "INFO",
             "class": "logging.StreamHandler",
-            "formatter": "colored",
+            "formatter": "color_formatter",
         },
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
             "level": "INFO",
+            "propagate": False,
         },
         "lessons": {
             "handlers": ["console"],
             "level": "INFO",
+            "propagate": False,
+        },
+        "itschooltt": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }

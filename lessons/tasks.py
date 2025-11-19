@@ -1,5 +1,4 @@
 from celery import shared_task
-
 from .models import Lesson
 from itschooltt.utils import log
 import time
@@ -18,6 +17,12 @@ def create_lesson_task(self, lesson_id):
     for student in students:
         log.warning(
             f"Уведомление отправлено студенту c ID[{student.id}] по уроку {lesson.title}"
+        )
+        self.update_state(
+            state="PROGRESS",
+            meta={
+                "status": f"Уведомление отправлено студенту c ID[{student.id}] по уроку {lesson.title}"
+            },
         )
         time.sleep(2)  # Задержка для симуляции отправки
     lesson.status = "created"

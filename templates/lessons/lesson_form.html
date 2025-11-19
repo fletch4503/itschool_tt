@@ -1,10 +1,13 @@
 {% load static %}
 {% load partials %}
-<form method="post"
+<form class="overflow-y-clip mb-2" id="create-lesson-form"
+      method="post"
       hx-post="{% url 'lesson_create' %}"
-      hx-target="#lesson-form-container"
+      hx-target="#lessons-tbody"
+{#      hx-target="#lesson-form-container"#}
       hx-indicator="#loading_bars"
-      hx-swap="innerHTML"
+      hx-swap="afterbegin"
+{#      hx-swap="innerHTML"#}
     >
     {% csrf_token %}
     {% if form.non_field_errors %}
@@ -84,34 +87,34 @@
         {% endfor %}
     </div>
 </form>
-{% if lesson %}
-<tr class="lesson-row" id="lesson-{{ lesson.pk }}" hx-swap-oob="afterbegin:#lessons-tbody">
-    <td>{{ lesson.id }}</td>
-    <td>{{ lesson.title }}</td>
-    <td>{{ lesson.description|truncatewords:5 }}</td>
-    <td>{{ lesson.subject.name }}</td>
-    <td>{{ lesson.teacher.name }}</td>
-    <td>{{ lesson.group.name|default:"—" }}</td>
-    <td>{{ lesson.scheduled_at|date:"d.m.Y H:i" }}</td>
-    <td>
-        <span class="status-{{ lesson.status }}">
-            {{ lesson.get_status_display }}
-        </span>
-    </td>
-    <td>
-        <div class="actions">
-            {% if lesson.status == 'created' %}
-            <form hx-post="{% url 'lesson_complete' lesson.pk %}" hx-target="#lesson-{{ lesson.pk }}" hx-swap="outerHTML" style="margin: 0;">
-                {% csrf_token %}
-                <button type="submit" class="btn-complete">Завершить</button>
-            </form>
-            {% else %}
-            <button class="btn-complete" disabled>Завершить</button>
-            {% endif %}
-        </div>
-    </td>
-</tr>
-{% endif %}
+{#{% if lesson %}#}
+{#<tr class="lesson-row" id="lesson-{{ lesson.pk }}" hx-swap-oob="afterbegin:#lessons-tbody">#}
+{#    <td>{{ lesson.id }}</td>#}
+{#    <td>{{ lesson.title }}</td>#}
+{#    <td>{{ lesson.description|truncatewords:5 }}</td>#}
+{#    <td>{{ lesson.subject.name }}</td>#}
+{#    <td>{{ lesson.teacher.name }}</td>#}
+{#    <td>{{ lesson.group.name|default:"—" }}</td>#}
+{#    <td>{{ lesson.scheduled_at|date:"d.m.Y H:i" }}</td>#}
+{#    <td>#}
+{#        <span class="status-{{ lesson.status }}">#}
+{#            {{ lesson.get_status_display }}#}
+{#        </span>#}
+{#    </td>#}
+{#    <td>#}
+{#        <div class="actions">#}
+{#            {% if lesson.status == 'created' %}#}
+{#            <form hx-post="{% url 'lesson_complete' lesson.pk %}" hx-target="#lesson-{{ lesson.pk }}" hx-swap="outerHTML" style="margin: 0;">#}
+{#                {% csrf_token %}#}
+{#                <button type="submit" class="btn-complete">Завершить</button>#}
+{#            </form>#}
+{#            {% else %}#}
+{#            <button class="btn-complete" disabled>Завершить</button>#}
+{#            {% endif %}#}
+{#        </div>#}
+{#    </td>#}
+{#</tr>#}
+{#{% endif %}#}
 <div id="task-status-container">
     {% if task_id %}
         {% include 'lessons/partials/task_status.html' %}

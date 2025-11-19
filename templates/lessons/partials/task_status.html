@@ -3,25 +3,26 @@
 <span id="task-status-info">
     {% partialdef task-status-info %}
         {% if task_id %}
-            {% if not is_complete %}
-                <div style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 3px; margin-bottom: 20px;">
+{#            {% if not is_complete %}#}
+                <div class="badge badge-warning">
                     <p>Статус: {{ status }}</p>
                 </div>
-                <td {% if task_result is "SUCCESS" %}hx-trigger="success" hx-get="none"
-                    {% elif task_result is "FAILURE" %}hx-trigger="failure" hx-get="none"
+                <td {% if status == "SUCCESS" %}hx-trigger="success" hx-get="none"
+                    {% elif status == "FAILURE" %}hx-trigger="failure" hx-get="none"
                     {% else %}
                         hx-get="{% url 'task_status' task_id %}"
                     {% endif %}
     {#                hx-target="backup-{{ backup.id }}"#}
-                    hx-trigger="every 3s"
+                    hx-trigger="every 1s"
                     hx-indicator="#loading_dots"
                     hx-on:success="task-status-info.close(); this.reset();"
-                    hx-swap="outerHTML every 3s">
+                    hx-swap="outerHTML every 1s"
+                >
                     {% include 'lessons/partials/indicator_balls.html' %} {{ task_result }}
                 </td>
-            {% else %}
+{#            {% else %}#}
                 <!-- Задача завершена, опрос прекращён -->
-            {% endif %}
+{#            {% endif %}#}
         {% endif %}
     {% endpartialdef task-status-info %}
 </span>

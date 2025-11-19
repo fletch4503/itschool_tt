@@ -3,11 +3,12 @@
 <form class="overflow-y-clip mb-2" id="create-lesson-form"
       method="post"
       hx-post="{% url 'lesson_create' %}"
-      hx-target="#lessons-tbody"
-{#      hx-target="#lesson-form-container"#}
+{#      hx-target="#lessons-tbody"#}
+      hx-target="#task-status-info"
       hx-indicator="#loading_bars"
-      hx-swap="afterbegin"
-{#      hx-swap="innerHTML"#}
+{#      hx-swap="afterbegin"#}
+      hx-on:create_run="this.reset();"
+      hx-swap="outerHTML"
     >
     {% csrf_token %}
     {% if form.non_field_errors %}

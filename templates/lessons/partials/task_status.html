@@ -12,7 +12,7 @@
                     hx-get="{% url 'task_status' task_id %}"
                 {% endif %}
     {#                hx-target="backup-{{ backup.id }}"#}
-                hx-trigger="every 1s"
+                hx-trigger="every 1s[status != 'SUCCESS' && status != 'FAILURE']"
                 hx-indicator="#loading_dots"
                 hx-on:success="task-status-info.close(); this.reset();"
                 hx-swap="outerHTML"

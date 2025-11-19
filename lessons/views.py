@@ -7,6 +7,7 @@ from django.views.generic import (
     # View,
 )
 from django.urls import reverse_lazy
+from django.core.cache import cache
 from django.views.decorators.http import (
     require_http_methods,
     # require_POST,
@@ -20,8 +21,8 @@ from .tasks import create_lesson_task
 from celery.result import AsyncResult
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from itschooltt.celery import current_app
+import time
 
-# import time
 # from django.contrib import messages
 
 
@@ -79,7 +80,7 @@ class LessonCreateView(CreateView):
     #     )
     #     return super().dispatch(request, *args, **kwargs)
     #
-    def form_valid(self, request, form):
+    def form_valid(self, form):
         cache.clear()
         response = super().form_valid(form)
         context = self.get_context_data(form=form)
@@ -102,13 +103,13 @@ class LessonCreateView(CreateView):
         }
         log.warning("Передаем в форму контекст %s", context)
         response = render(
-            request,
+            self.request,
             "lessons/partials/task_status.html",
             context,
         )
         response["HX-Trigger"] = "create_run"
-        request.session["task_id"] = task.id
-        request.session["lesson_id"] = lessn_id
+        self.request.session["task_id"] = task.id
+        self.request.session["lesson_id"] = lessn_id
         if res.state in ["PENDING", "PROGRESS"]:
             return HttpResponseRedirect(
                 reverse_lazy("task_status", kwargs={"task_id": task.id})

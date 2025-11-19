@@ -6,15 +6,20 @@
     <meta charset="UTF-8">
     <title>Уроки</title>
 {#    <script src="https://unpkg.com/htmx.org@1.9.10"></script>#}
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.js"
-            integrity="sha384-ksKjJrwjL5VxqAkAZAVOPXvMkwAykMaNYegdixAESVr+KqLkKE8XBDoZuwyWVUDv"
+{#    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.js"#}
+{#            integrity="sha384-ksKjJrwjL5VxqAkAZAVOPXvMkwAykMaNYegdixAESVr+KqLkKE8XBDoZuwyWVUDv"#}
+{#            crossorigin="anonymous">#}
+{#    </script>#}
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
+            integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
             crossorigin="anonymous">
     </script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <meta name="htmx-config" content='{"includeIndicatorStyles": true}'>
 </head>
-<body>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <div class="w-full pt-1">
         <div class="form-section mt-1 shadow-md">
             <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок</h2>
@@ -47,5 +52,6 @@
             </tbody>
         </table>
     </div>
+<script src="{% static 'js/htmx.min.js' %}"></script>
 </body>
 </html>

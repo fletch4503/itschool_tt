@@ -49,7 +49,7 @@ class LessonListView(ListView):
     model = Lesson
     template_name = "lessons/lesson_list.html"
     context_object_name = "lessons"
-    ordering = ["-scheduled_at"]
+    ordering = ["-id"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -73,7 +73,14 @@ class LessonCreateView(CreateView):
     template_name = "lessons/lesson_form.html"
     success_url = reverse_lazy("lesson_list")
 
+    def dispatch(self, request, *args, **kwargs):
+        log.info(
+            f"LessonCreateView dispatch: method={request.method}, htmx={getattr(request, 'htmx', None)}"
+        )
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
+        log.info("Form is valid, creating lesson")
         response = super().form_valid(form)
         try:
             task = create_lesson_task.delay(self.object.id)
@@ -82,9 +89,22 @@ class LessonCreateView(CreateView):
         except Exception as e:
             log.error(f"Не получили результата из Celery c ошибкой: {e}")
         if self.request.htmx:
-            context = {"lesson": self.object}
-            return render(self.request, "lessons/partials/lesson_row.html", context)
+            log.info("HTMX request, rendering lesson_form.html with lesson")
+            context = self.get_context_data(form=form)
+            context["lesson"] = self.object
+            context["task_id"] = self.request.session.get("task_id")
+            return render(self.request, self.template_name, context)
         return response
+
+    def form_invalid(self, form):
+        log.error(f"Form is invalid: {form.errors}")
+        if self.request.htmx:
+            log.info(
+                "HTMX request, form invalid, rendering lesson_form.html with errors"
+            )
+            context = self.get_context_data(form=form)
+            return render(self.request, self.template_name, context)
+        return super().form_invalid(form)
         # return HttpResponseClientRefresh()
 
 

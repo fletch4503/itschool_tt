@@ -14,7 +14,10 @@
     <div class="w-full px-0 py-1 pt-1">
         <div class="form-section gap-1">
             <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок</h2>
-            {% include 'lessons/lesson_form.html' %} {% include 'lessons/partials/task_status.html' %}
+            <div id="lesson-form-container">
+                {% include 'lessons/lesson_form.html' %}
+            </div>
+            {% include 'lessons/partials/task_status.html' %}
         </div>
         <h1 class="text-xl font-bold">Список уроков</h1>
         <table class="table table-sm">

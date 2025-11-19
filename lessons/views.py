@@ -107,6 +107,7 @@ class LessonCreateView(CreateView):
         )
         response["HX-Trigger"] = "create_run"
         self.request.session["task_id"] = task.id
+        self.request.session["lesson_id"] = lessn_id
         if res.state in ["PENDING", "PROGRESS"]:
             return HttpResponseRedirect(
                 reverse_lazy("task_status", kwargs={"task_id": task.id})
@@ -124,6 +125,7 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     global count_status
     count_status += 1
     task_id = request.GET.get("task_id") or task_id
+    lesson_id = request.session.get("lesson_id")
     template_name = "lessons/partials/task_status.html#task-status-info"
     if request.htmx:
         log.warning("Итерация %s", count_status)
@@ -132,6 +134,7 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     log.warning("Текущий статус %s", res.state)
     context = {
         "task_id": task_id,
+        "lesson_id": lesson_id,
         "task_result": count_status,
         "status": res.state,
     }
@@ -142,7 +145,9 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
         context["status"] = "SUCCESS"
         response = render(request, template_name=template_name, context=context)
         response["HX-Trigger"] = "success"
-        # Очищаем task_id из сессии когда задача завершена
+        # Очищаем task_id и lesson_id из сессии когда задача завершена
+        request.session.pop("task_id", None)
+        request.session.pop("lesson_id", None)
         log.warning("Отправляем в форму контекст %s", context)
         return HttpResponseClientRefresh()
     elif res.state == "FAILURE":
@@ -150,6 +155,9 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
         context["status"] = "FAILURE"
         response = render(request, template_name=template_name, context=context)
         response["HX-Trigger"] = "failure"
+        # Очищаем task_id и lesson_id из сессии при ошибке
+        request.session.pop("task_id", None)
+        request.session.pop("lesson_id", None)
         log.warning("Отправляем в форму контекст %s", context)
         return HttpResponseClientRefresh()
     else:

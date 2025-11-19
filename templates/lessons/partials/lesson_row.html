@@ -1,0 +1,26 @@
+<tr class="lesson-row" id="lesson-{{ lesson.pk }}">
+    <td>{{ lesson.id }}</td>
+    <td>{{ lesson.title }}</td>
+    <td>{{ lesson.description|truncatewords:5 }}</td>
+    <td>{{ lesson.subject.name }}</td>
+    <td>{{ lesson.teacher.name }}</td>
+    <td>{{ lesson.group.name|default:"—" }}</td>
+    <td>{{ lesson.scheduled_at|date:"d.m.Y H:i" }}</td>
+    <td>
+        <span class="status-{{ lesson.status }}">
+            {{ lesson.get_status_display }}
+        </span>
+    </td>
+    <td>
+        <div class="actions">
+            {% if lesson.status == 'created' %}
+            <form hx-post="{% url 'lesson_complete' lesson.pk %}" hx-target="#lesson-{{ lesson.pk }}" hx-swap="outerHTML" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-complete">Завершить</button>
+            </form>
+            {% else %}
+            <button class="btn-complete" disabled>Завершить</button>
+            {% endif %}
+        </div>
+    </td>
+</tr>

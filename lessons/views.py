@@ -82,9 +82,8 @@ class LessonCreateView(CreateView):
         except Exception as e:
             log.error(f"Не получили результата из Celery c ошибкой: {e}")
         if self.request.htmx:
-            context = self.get_context_data(form=form)
-            context["task_id"] = self.request.session.get("task_id")
-            return render(self.request, self.template_name, context)
+            context = {"lesson": self.object}
+            return render(self.request, "lessons/partials/lesson_row.html", context)
         return response
         # return HttpResponseClientRefresh()
 

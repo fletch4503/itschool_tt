@@ -2,26 +2,28 @@
 
 <span id="task-status-info">
     {% partialdef task-status-info %}
+        <div class="badge badge-warning">Статус: {{ status }}</div>
+        <div class="badge badge-info">Урок с id: {{ lesson_id }}</div>
         {% if task_id %}
     {#            {% if not is_complete %}#}
-            <div class="badge badge-warning">Статус: {{ status }}</div>
-            <div class="badge badge-info">Урок с id: {{ lesson_id }}</div>
+
             <td {% if status == "SUCCESS" %}hx-trigger="success" hx-get="none"
                 {% elif status == "FAILURE" %}hx-trigger="failure" hx-get="none"
                 {% else %}
                     hx-get="{% url 'task_status' task_id %}"
                 {% endif %}
     {#                hx-target="backup-{{ backup.id }}"#}
-                hx-trigger="every 1s[status != 'SUCCESS' && status != 'FAILURE']"
-                hx-indicator="#loading_dots"
+                hx-trigger="load, every 2s"
+{#                hx-indicator="#loading_dots"#}
                 hx-on:success="task-status-info.close(); this.reset();"
-                hx-swap="outerHTML"
+                hx-target="this"
+                hx-swap="innerHTML"
+{#                hx-swap="outerHTML"#}
             >
                 {% include 'lessons/partials/indicator_balls.html' %} {{ task_result }}
             </td>
-    {#            {% else %}#}
+        {% else %}
             <!-- Задача завершена, опрос прекращён -->
-    {#            {% endif %}#}
         {% endif %}
     {% endpartialdef task-status-info %}
 </span>

@@ -2,9 +2,12 @@
 {% load partials %}
 <form class="overflow-y-clip mb-2" method="post"
       hx-post="{% url 'lesson_create' %}"
+{#      hx-target="#lessons-tbody"#}
       hx-target="#task-status-info"
+{#      hx-on:create_run="this.reset();htmx:afterRequest: window.location.href='{% url 'task_status' task_id %}'"#}
       hx-on:create_run="this.reset();"
       hx-swap="outerHTML"
+{#      hx-swap="afterbegin"#}
     >
     {% csrf_token %}
     {% if form.non_field_errors %}
@@ -48,6 +51,11 @@
             {% endif %}
         {% endfor %}
     <button type="submit" class="btn btn-primary btn-sm hover:bg-amber-600 mt-3 mx-auto text-sm">Создать урок</button>
+    <div id="task-status-container" class="mt-2">
+    {% if task_id %}
+        {% include 'lessons/partials/task_status.html' with task_id=task_id %}
+    {% endif %}
+    </div>
     </div>
     <div class="form-column">
         {% for field in form %}
@@ -85,8 +93,4 @@
         {% endfor %}
     </div>
 </form>
-<div id="task-status-container" class="mt-2">
-{#    {% if task_id %}#}
-        {% include 'lessons/partials/task_status.html' %}
-{#    {% endif %}#}
-</div>
+

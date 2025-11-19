@@ -34,9 +34,7 @@ def counter(func):
 
     def wrapper(*args, **kwargs):
         wrapper.count_status += 1  # Увеличиваем счётчик при каждом вызове функции
-        logger.info(
-            f"Функция {func.__name__} была вызвана {wrapper.count_status} раз(а)"
-        )
+        log.info(f"Функция {func.__name__} была вызвана {wrapper.count_status} раз(а)")
         return func(*args, **kwargs)
 
     wrapper.count_status = 0  # Инициализируем счётчик
@@ -83,8 +81,12 @@ class LessonCreateView(CreateView):
             self.request.session["task_id"] = task.id
         except Exception as e:
             log.error(f"Не получили результата из Celery c ошибкой: {e}")
-        # return response
-        return HttpResponseClientRefresh()
+        if self.request.htmx:
+            context = self.get_context_data(form=form)
+            context["task_id"] = self.request.session.get("task_id")
+            return render(self.request, self.template_name, context)
+        return response
+        # return HttpResponseClientRefresh()
 
 
 # class TaskStatusView(View):
@@ -110,7 +112,6 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     elif res.state == "SUCCESS":
         status = "Уведомления отправлены"
         is_complete = True
-        response["HX-Trigger"] = "success"
         # Очищаем task_id из сессии когда задача завершена
         if "task_id" in request.session:
             del request.session["task_id"]
@@ -118,7 +119,6 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     else:
         status = "Ошибка"
         is_complete = True
-        response["HX-Trigger"] = "failure"
         # Очищаем task_id из сессии при ошибке
         if "task_id" in request.session:
             del request.session["task_id"]

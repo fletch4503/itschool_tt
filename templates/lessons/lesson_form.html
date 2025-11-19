@@ -1,56 +1,91 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Создать урок</title>
-    <style>
-    </style>
-</head>
-<body>
-    <h1 class="text-xl text-centered">Создать новый урок</h1>
-    <form method="post">
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-            <div class="errorlist">
-                {% for error in form.non_field_errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </div>
-        {% endif %}
+{% load partials %}
+<form method="post"
+      hx-post="{% url 'lesson_create' %}"
+      hx-target="lessons-tbody"
+      hx-indicator="#loading_bars"
+      hx-swap="afterbegin"
+    >
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="errorlist">
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="form-column">
         {% for field in form %}
-            <div class="form-group">
-                {% if field.label %}
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {% endif %}
-                
-                {% if field.field.widget.input_type == "checkbox" %}
-                    <div>{{ field }}</div>
-                {% elif field.many_to_many %}
-                    <select class="select" multiple name="{{ field.name }}" id="{{ field.id_for_label }}">
-                        {% for option_value, option_label in field.field.choices %}
-                            <option value="{{ option_value }}" {% if option_value in field.value %}selected{% endif %}>
-                                {{ option_label }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                {% else %}
-                    {{ field }}
-                {% endif %}
-                {% if field.errors %}
-                    <div class="errorlist">
-                        {% for error in field.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                {% if field.help_text %}
-                    <small>{{ field.help_text }}</small>
-                {% endif %}
-            </div>
+            {% if field.name in 'title, description, scheduled_at, duration' %}
+                <div class="form-group">
+                    {% if field.label %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% endif %}
+                    {% if field.field.widget.input_type == "checkbox" %}
+                        <div>{{ field }}</div>
+                    {% elif field.many_to_many %}
+                        <select class="select" multiple name="{{ field.name }}" id="{{ field.id_for_label }}">
+                            {% for option_value, option_label in field.field.choices %}
+                                <option value="{{ option_value }}" {% if option_value in field.value %}selected{% endif %}>
+                                    {{ option_label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small>{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% endfor %}
-        <button type="submit">Создать урок</button>
-        <button class=href="{% url 'lesson_list' %}">Отмена</button>
-    </form>
-</body>
-</html>
+    <button type="submit" class="btn btn-primary btn-sm hover:bg-amber-600 mt-3 mx-auto text-sm">Создать урок</button>
+    </div>
+    <div class="form-column">
+        {% for field in form %}
+            {% if field.name in 'subject, teacher, group, students' %}
+                <div class="form-group">
+                    {% if field.label %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% endif %}
+                    {% if field.field.widget.input_type == "checkbox" %}
+                        <div>{{ field }}</div>
+                    {% elif field.many_to_many %}
+                        <select class="select" multiple name="{{ field.name }}" id="{{ field.id_for_label }}">
+                            {% for option_value, option_label in field.field.choices %}
+                                <option value="{{ option_value }}" {% if option_value in field.value %}selected{% endif %}>
+                                    {{ option_label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small>{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</form>
+<div id="task-status-container">
+    {% if task_id %}
+        {% include 'lessons/partials/task_status.html' %}
+    {% endif %}
+</div>

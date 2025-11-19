@@ -37,21 +37,20 @@
                 {% else %}
                     {{ field }}
                 {% endif %}
-                                {% if field.errors %}
+                {% if field.errors %}
                     <div class="errorlist">
                         {% for error in field.errors %}
                             <li>{{ error }}</li>
                         {% endfor %}
                     </div>
                 {% endif %}
-
                 {% if field.help_text %}
                     <small>{{ field.help_text }}</small>
                 {% endif %}
             </div>
         {% endfor %}
         <button type="submit">Создать урок</button>
-        <a href="{% url 'lesson_list' %}">Отмена</a>
+        <button class=href="{% url 'lesson_list' %}">Отмена</button>
     </form>
 </body>
 </html>

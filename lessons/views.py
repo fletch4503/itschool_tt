@@ -1,7 +1,12 @@
 import time
-
+from itschooltt.utils import log
 from django.shortcuts import render
-from django.views.generic import ListView, CreateView, UpdateView, View
+from django.views.generic import (
+    ListView,
+    CreateView,
+    UpdateView,
+    View,
+)
 from django.urls import reverse_lazy
 from django.views.decorators.http import (
     require_http_methods,
@@ -14,13 +19,14 @@ from .models import Lesson
 from .forms import LessonForm
 from .tasks import create_lesson_task
 from celery.result import AsyncResult
-from itschooltt.utils import log
 from django.http import HttpResponse, HttpRequest
-from itschooltt.celery import current_app
+from itschooltt.celery import current_app as app
+
 # from django.contrib import messages
 
 
 count_status = 0
+
 
 def counter(func):
     global count_status
@@ -36,8 +42,10 @@ def counter(func):
     wrapper.count_status = 0  # Инициализируем счётчик
     return wrapper
 
+
 class HtmxHttpRequest(HttpRequest):
     htmx: HtmxDetails
+
 
 class LessonListView(ListView):
     model = Lesson
@@ -76,17 +84,6 @@ class LessonCreateView(CreateView):
         except Exception as e:
             log.error(f"Не получили результата из Celery c ошибкой: {e}")
         # return response
-        return HttpResponseClientRefresh()
-
-class LessonCompleteView(UpdateView):
-    model = Lesson
-    fields = []
-    success_url = reverse_lazy("lesson_list")
-
-    def post(self, request, *args, **kwargs):
-        lesson = self.get_object()
-        lesson.status = "completed"
-        lesson.save()
         return HttpResponseClientRefresh()
 
 
@@ -134,3 +131,15 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     }
     response = render(request, template_name=template_name, context=context)
     return response
+
+
+class LessonCompleteView(UpdateView):
+    model = Lesson
+    fields = []
+    success_url = reverse_lazy("lesson_list")
+
+    def post(self, request, *args, **kwargs):
+        lesson = self.get_object()
+        lesson.status = "completed"
+        lesson.save()
+        return HttpResponseClientRefresh()

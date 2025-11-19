@@ -2,7 +2,7 @@
 
 <span id="task-status-info">
     {% partialdef task-status-info %}
-        {% if task_id %}
+        {% if task_id and lesson_id %}
     {#            {% if not is_complete %}#}
             <div class="badge badge-warning">Статус: {{ status }}</div>
             <div class="badge badge-info">Урок с id: {{ lesson_id }}</div>

@@ -124,10 +124,10 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     global count_status
     count_status += 1
     task_id = request.GET.get("task_id") or task_id
-    template_name = "lessons/partials/task_status.html"
+    template_name = "lessons/partials/task_status.html#task-status-info"
     if request.htmx:
         log.warning("Итерация %s", count_status)
-        template_name += "#task-status-info"
+        # template_name += "#task-status-info"
     res = AsyncResult(task_id, app=current_app)
     log.warning("Текущий статус %s", res.state)
     context = {

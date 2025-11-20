@@ -4,10 +4,10 @@ from itschooltt.utils import log
 import time
 
 
-# @shared_task(name="Create_lesson_task")
-@shared_task(bind=True)
+@shared_task(name="Create_lesson_task")
+# @shared_task(bind=True)
 # @shared_task(name="Create_lesson_task", ignore_result=False)
-def create_lesson_task(self, lesson_id: int = None):
+def create_lesson_task(lesson_id: int = None):
     lesson = Lesson.objects.get(id=lesson_id)
     log.info("Получили в задачу номер урока %s", lesson_id)
     # update_state(state="PROGRESS", meta={"status": "Отправляем уведомления ученикам"})

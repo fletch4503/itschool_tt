@@ -25,9 +25,9 @@
         <div class="form-section mt-1 shadow-md">
             <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок</h2>
             {% include 'lessons/partials/indicator_bars.html' %}
+            {% if task_id %}{% include 'lessons/partials/task_status.html' %}{% endif %}
             <div id="lesson-form-container">
                 {% include 'lessons/lesson_form.html' %}
-                {% include 'lessons/partials/task_status.html' %}
             </div>
         </div>
         <h1 class="text-xl font-bold shadow-md pb-2">Список уроков</h1>

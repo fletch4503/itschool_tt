@@ -1,36 +1,27 @@
 {% load partials %}
 {% partialdef task-status-info %}
-    <div class="badge badge-warning">Статус: {{ status }}</div>
-    <div class="badge badge-info">Урок с id: {{ lesson_id }}</div>
-    <div class="badge badge-info">Task_ID: {{ task_id }}</div>
-    <div id="task-status-info" class="mt-2"
+<div id="task-status-info" class="mt-2 text-sm"
        {% if status == "SUCCESS" %}hx-trigger="success" hx-get="none"
        {% elif status == "FAILURE" %}hx-trigger="failure" hx-get="none"
        {% else %}
             hx-get="{% url 'lessons:task_status' task_id %}"
             hx-indicator="#loading_bars"
-            hx-trigger="load, every 5s"
+            hx-trigger="load, every 3s"
             hx-target="this"
+{#            hx-swap="outerHTML"#}
             hx-swap="innerHTML"
+            hx-on::beforeRequest="document.getElementById('lesson-form-container').style.opacity = 0.4;"
+            hx-on::afterRequest="document.getElementById('lesson-form-container').style.opacity = 1.0;"
        {% endif %}
        >
-    </div>
-{% endpartialdef task-status-info %}
 {% if task_id %}
-    {% partial task-status-info %}
+    <span class="badge badge-warning">{{ status }} по Уроку с ID:{{ lesson_id }}</span>
+{#    <span class="badge badge-info">Урок с id: </span>#}
+{#    <span class="badge badge-info">Task_ID: {{ task_id }}</span>#}
+    <span class="badge badge-warning">Шаг: {{ task_result }}</span>
 {% endif %}
-{#                hx-on::success="task-status-info.close(); this.reset();"#}
-{#                hx-on::create_run=#}
-{#                hx-on::afterRequest="window.location.href='{% url 'lessons:task_status' task_id %}'"#}
-{#        {% if task_id %}#}
-{#        <div id="task-status" hx-get="{% url 'task_status' task_id %}" hx-trigger="load, every 5s[!this.classList.contains('task-complete')]" hx-target="this" hx-swap="innerHTML">#}
-{#            <p>Статус задачи: Загрузка...</p>#}
-{#        </div>#}
-{#        <script>#}
-{#            document.addEventListener('htmx:afterSwap', function(e) {#}
-{#                if (e.detail.target.id === 'task-status' && e.detail.target.innerHTML.includes('Задача завершена')) {#}
-{#                    e.detail.target.classList.add('task-complete');#}
-{#                }#}
-{#            });#}
-{#        </script>#}
-{#        {% endif %}#}
+</div>
+{% endpartialdef task-status-info %}
+
+{% partial task-status-info %}
+

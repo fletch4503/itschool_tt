@@ -121,10 +121,10 @@ class LessonCreateView(CreateView):
         # self.request.session["lesson_id"] = lessn_id
         # return response
         if res.state in ["PENDING", "PROGRESS"]:
-            response["HX-Retarget"] = (
-                "lessons/partials/task_status.html#task-status-info"
-            )
-            response["HX-Reswap"] = "outerHTML"
+            # response["HX-Retarget"] = (
+            #     "lessons/partials/task_status.html#task-status-info"
+            # )
+            # response["HX-Reswap"] = "outerHTML"
             return HttpResponseRedirect(
                 reverse_lazy(
                     "lessons:task_status",
@@ -140,7 +140,6 @@ class LessonCreateView(CreateView):
 #     def get(self, request, task_id):
 @counter
 @require_http_methods(["GET"])
-# def task_status(request, task_id, lesson_id):
 def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     global count_status
     count_status += 1
@@ -148,10 +147,11 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     # lesson = request.GET.get("lesson") or lesson
     # template_name = "lessons/lesson_form.html#task-status-info"
     template_name = "lessons/partials/task_status.html"
+    # template_name = "lessons/lesson_list.html"
     if request.htmx:
         log.warning("Итерация %s, task_id: %s", count_status, task_id)
         template_name += "#task-status-info"
-    res = AsyncResult(task_id, app=current_app)
+        res = AsyncResult(task_id, app=current_app)
     context = {
         "task_id": task_id,
         # "lesson": lesson,

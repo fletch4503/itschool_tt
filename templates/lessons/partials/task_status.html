@@ -1,12 +1,11 @@
 {% load partials %}
 
-<span id="task-status-info">
+<span id="task-status-info" class="mt-2">
     {% partialdef task-status-info %}
+        {% if task_id %}
         <div class="badge badge-warning">Статус: {{ status }}</div>
         <div class="badge badge-info">Урок с id: {{ lesson_id }}</div>
-        {% if task_id %}
-    {#            {% if not is_complete %}#}
-
+        <div class="badge badge-info">Task_ID: {{ task_id }}</div>
             <td {% if status == "SUCCESS" %}hx-trigger="success" hx-get="none"
                 {% elif status == "FAILURE" %}hx-trigger="failure" hx-get="none"
                 {% else %}
@@ -16,16 +15,16 @@
                 hx-trigger="load, every 2s"
 {#                hx-indicator="#loading_dots"#}
                 hx-on::success="task-status-info.close(); this.reset();"
-                hx-on::afterRequest="window.location.href='{% url 'lessons:task_status' task_id %}'"
+{#                hx-on::afterRequest="window.location.href='{% url 'lessons:task_status' task_id %}'"#}
 {#                hx-target="this"#}
 {#                hx-swap="innerHTML"#}
-                hx-swap="outerHTML"
+                hx-swap="outerHTML every 2s"
             >
                 {% include 'lessons/partials/indicator_balls.html' %} {{ task_result }}
             </td>
-        {% else %}
+       {% else %}
             <!-- Задача завершена, опрос прекращён -->
-        {% endif %}
+       {% endif %}
     {% endpartialdef task-status-info %}
 </span>
 {#        {% if task_id %}#}

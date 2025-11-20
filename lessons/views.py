@@ -73,8 +73,18 @@ class LessonListView(ListView):
         view = LessonCreateView()
         view.request = self.request
         context["form"] = view.get_form()
-        context["task_id"] = self.request.session.get("task_id")
-        log.info("Передаем в lesson_list.html task_id: %s", context["task_id"])
+        task_id = self.request.session.get("task_id")
+        context["task_id"] = task_id
+        log.info("Передаем в lesson_list.html task_id: %s", task_id)
+        # if task_id:
+        #     return HttpResponseRedirect(
+        #         reverse_lazy(
+        #             "lessons:task_status",
+        #             kwargs={"task_id": task_id},
+        #         )
+        #     )
+        # else:
+        # self.request.session.pop("task_id", None)
         return context
 
 
@@ -87,7 +97,7 @@ class LessonCreateView(CreateView):
     success_url = reverse_lazy("lessons:lesson_list")
 
     def form_valid(self, form):
-        cache.clear()
+        self.request.session.pop("task_id", None)  # Сбрасываем задачу
         response = super().form_valid(form)
         context = self.get_context_data(form=form)
         lesson = self.object
@@ -99,7 +109,6 @@ class LessonCreateView(CreateView):
             time.sleep(2)
         except Exception as e:
             log.error(f"Не получили результата из Celery c ошибкой: {e}")
-        # if self.request.htmx:
         res = AsyncResult(task.id, app=current_app)
         context = {
             # "form": form,
@@ -117,23 +126,24 @@ class LessonCreateView(CreateView):
         )
         # response["HX-Trigger"] = "success"
         response["HX-Trigger"] = "create_run"
-        # self.request.session["task_id"] = task.id
+        self.request.session["task_id"] = task.id
         # self.request.session["lesson_id"] = lessn_id
         # return response
-        if res.state in ["PENDING", "PROGRESS"]:
-            # response["HX-Retarget"] = (
-            #     "lessons/partials/task_status.html#task-status-info"
-            # )
-            # response["HX-Reswap"] = "outerHTML"
-            return HttpResponseRedirect(
-                reverse_lazy(
-                    "lessons:task_status",
-                    kwargs={"task_id": task.id},
-                )
-            )
-        else:
-            log.warning("Вышли из FormValid")
-            return response
+        # if res.state in ["PENDING", "PROGRESS"]:
+        #     # response["HX-Retarget"] = (
+        #     #     "lessons/partials/task_status.html#task-status-info"
+        #     # )
+        #     # response["HX-Reswap"] = "outerHTML"
+        #     log.info("Передаем в lessons:task_status task_id: %s", task.id)
+        #     return HttpResponseRedirect(
+        #         reverse_lazy(
+        #             "lessons:task_status",
+        #             kwargs={"task_id": task.id},
+        #         )
+        #     )
+        # else:
+        log.info("Вышли из FormValid")
+        return HttpResponseClientRefresh()
 
 
 # class TaskStatusView(View):

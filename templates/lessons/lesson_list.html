@@ -26,9 +26,12 @@
             {% include 'lessons/partials/indicator_bars.html' %}
             <div id="lesson-form-container">
                 {% include 'lessons/lesson_form.html' %}
-                <div id="task-status-container" class="mt-2">
-                    {% include 'lessons/partials/task_status.html' %}
-                </div>
+{#                <div id="task-status-container" >#}
+                <div class="badge badge-info">Task_ID: {{ task_id }}</div>
+                    {% if task_id %}
+                        {% include 'lessons/partials/task_status.html' %}
+                    {% endif %}
+{#                </div>#}
             </div>
         </div>
         <h1 class="text-xl font-bold shadow-md pb-2">Список уроков</h1>

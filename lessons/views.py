@@ -61,6 +61,11 @@ class LessonListView(ListView):
         status = self.request.GET.get("status")
         if status:
             queryset = queryset.filter(status=status)
+        log.info(
+            "Передаем в lesson_list.html статус: %s и набор длиной: %s",
+            status,
+            len(queryset),
+        )
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -69,6 +74,7 @@ class LessonListView(ListView):
         view.request = self.request
         context["form"] = view.get_form()
         context["task_id"] = self.request.session.get("task_id")
+        log.info("Передаем в lesson_list.html task_id: %s", context["task_id"])
         return context
 
 
@@ -78,7 +84,7 @@ class LessonCreateView(CreateView):
     # template_name = "lessons/lesson_form.html"
     template_name = "lessons/partials/lesson_row.html"
     # template_name = "lessons/partials/task_status.html#task-status-info"
-    success_url = reverse_lazy("lesson_list")
+    success_url = reverse_lazy("lessons:lesson_list")
 
     def form_valid(self, form):
         cache.clear()
@@ -98,7 +104,7 @@ class LessonCreateView(CreateView):
         context = {
             # "form": form,
             "task_id": task.id,
-            "lesson_id": lesson.id,
+            # "lesson_id": lesson.id,
             "lesson": lesson,
             "status": res.state,
             # "HX-Trigger": "create_run",
@@ -121,7 +127,8 @@ class LessonCreateView(CreateView):
             response["HX-Reswap"] = "outerHTML"
             return HttpResponseRedirect(
                 reverse_lazy(
-                    "task_status", kwargs={"task_id": task.id, "lesson_id": lesson.id}
+                    "lessons:task_status",
+                    kwargs={"task_id": task.id},
                 )
             )
         else:
@@ -134,22 +141,20 @@ class LessonCreateView(CreateView):
 @counter
 @require_http_methods(["GET"])
 # def task_status(request, task_id, lesson_id):
-def task_status(request: HtmxHttpRequest, task_id, lesson_id) -> HttpResponse:
+def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     global count_status
     count_status += 1
     task_id = request.GET.get("task_id") or task_id
-    lesson_id = request.GET.get("lesson_id") or lesson_id
+    # lesson = request.GET.get("lesson") or lesson
     # template_name = "lessons/lesson_form.html#task-status-info"
     template_name = "lessons/partials/task_status.html"
     if request.htmx:
-        log.warning(
-            "Итерация %s, task_id: %s, lesson_id: %s", count_status, task_id, lesson_id
-        )
+        log.warning("Итерация %s, task_id: %s", count_status, task_id)
         template_name += "#task-status-info"
     res = AsyncResult(task_id, app=current_app)
     context = {
         "task_id": task_id,
-        "lesson_id": lesson_id,
+        # "lesson": lesson,
         "task_result": count_status,
         "status": res.state,
     }
@@ -159,9 +164,9 @@ def task_status(request: HtmxHttpRequest, task_id, lesson_id) -> HttpResponse:
         context["status"] = "SUCCESS"
         response = render(request, template_name=template_name, context=context)
         response["HX-Trigger"] = "success"
-        # Очищаем task_id и lesson_id из сессии когда задача завершена
-        # request.session.pop("task_id", None)
-        # request.session.pop("lesson_id", None)
+        # Очищаем task_id и lesson из сессии когда задача завершена
+        request.session.pop("task_id", None)
+        # request.session.pop("lesson", None)
         log.warning("Текущий статус: %s и контекст: %s", res.state, context)
         return HttpResponseClientRefresh()
     elif res.state == "FAILURE":
@@ -169,9 +174,9 @@ def task_status(request: HtmxHttpRequest, task_id, lesson_id) -> HttpResponse:
         context["status"] = "FAILURE"
         response = render(request, template_name=template_name, context=context)
         response["HX-Trigger"] = "failure"
-        # Очищаем task_id и lesson_id из сессии при ошибке
+        # Очищаем task_id и lesson из сессии при ошибке
         request.session.pop("task_id", None)
-        request.session.pop("lesson_id", None)
+        # request.session.pop("lesson", None)
         log.warning("Текущий статус: %s и контекст: %s", res.state, context)
         return HttpResponseClientRefresh()
     else:
@@ -183,7 +188,7 @@ def task_status(request: HtmxHttpRequest, task_id, lesson_id) -> HttpResponse:
 class LessonCompleteView(UpdateView):
     model = Lesson
     fields = []
-    success_url = reverse_lazy("lesson_list")
+    success_url = reverse_lazy("lessons:lesson_list")
 
     def post(self, request, *args, **kwargs):
         lesson = self.get_object()

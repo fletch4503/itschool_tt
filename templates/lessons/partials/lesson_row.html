@@ -14,7 +14,7 @@
     <td>
         <div class="actions">
             {% if lesson.status == 'created' %}
-            <form hx-post="{% url 'lesson_complete' lesson.pk %}" hx-target="#lesson-{{ lesson.pk }}" hx-swap="outerHTML" style="margin: 0;">
+            <form hx-post="{% url 'lessons:lesson_complete' lesson.pk %}" hx-target="#lesson-{{ lesson.pk }}" hx-swap="outerHTML" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="btn-complete">Завершить</button>
             </form>

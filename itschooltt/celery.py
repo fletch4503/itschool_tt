@@ -10,13 +10,13 @@ current_app = Celery(
     "celery",
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
-    broker_connection_retry_on_startup=True,
+    broker_connection_retry_on_startup=settings.CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP,
 )
 log.info(
     "broker: %s, backend: %s, broker_connection_retry_on_startup: %s",
     settings.CELERY_BROKER_URL,
     settings.CELERY_RESULT_BACKEND,
-    broker_connection_retry_on_startup,
+    settings.CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP,
 )
 # current_app.config_from_object("django.conf:settings", namespace="CELERY")
 

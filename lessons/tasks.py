@@ -22,6 +22,6 @@ def create_lesson_task(lesson_id: int = None):
     lesson.save()
 
     return {
-        "state": "SUCCESS",
-        "status": "Уведомления отправлены",
+        "status": "SUCCESS",
+        "state": "Уведомления отправлены",
     }

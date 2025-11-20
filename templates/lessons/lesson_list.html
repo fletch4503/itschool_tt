@@ -23,11 +23,12 @@
     <div class="w-full pt-1">
         <div class="form-section mt-1 shadow-md">
             <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок</h2>
+            {% include 'lessons/partials/indicator_bars.html' %}
             <div id="lesson-form-container">
                 {% include 'lessons/lesson_form.html' %}
-            <div id="task-status-container" class="mt-2">
-                {% include 'lessons/partials/task_status.html' %}
-            </div>
+                <div id="task-status-container" class="mt-2">
+                    {% include 'lessons/partials/task_status.html' %}
+                </div>
             </div>
         </div>
         <h1 class="text-xl font-bold shadow-md pb-2">Список уроков</h1>

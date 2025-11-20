@@ -1,11 +1,14 @@
 {% load static %}
 {% load partials %}
-<form class="overflow-y-clip mb-2" method="post"
-      hx-post="{% url 'lesson_create' %}"
-{#      hx-target="#lessons-tbody"#}
-      hx-target="#task-status-info"
-{#      hx-on:create_run="this.reset();htmx:afterRequest: window.location.href='{% url 'task_status' task_id %}'"#}
-      hx-on:create_run="this.reset();"
+<form class="overflow-y-clip mb-2"
+{#      method="post"#}
+      hx-post="{% url 'lessons:lesson_create' %}"
+      hx-target="#lessons-tbody"
+      hx-indicator="#loading_bars"
+      hx-on::create_run="this.reset();"
+{#      hx-target="#task-status-info"#}
+      hx-on::afterRequest="window.location.href='{% url 'lessons:task_status' task_id %}'"
+{#      hx-on:create_run="this.reset();"#}
       hx-swap="outerHTML"
 {#      hx-swap="afterbegin"#}
     >
@@ -50,7 +53,8 @@
                 </div>
             {% endif %}
         {% endfor %}
-    <button type="submit" class="btn btn-primary btn-sm hover:bg-amber-600 mt-3 mx-auto text-sm">Создать урок</button>
+        <button type="submit" class="btn btn-primary btn-sm hover:bg-amber-600 mt-3 mx-auto text-sm">Создать урок
+        </button>
     </div>
     <div class="form-column">
         {% for field in form %}

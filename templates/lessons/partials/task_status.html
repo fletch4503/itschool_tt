@@ -1,34 +1,27 @@
 {% load partials %}
-
-<span id="task-status-info" class="mt-2">
-    {% partialdef task-status-info %}
-        {% if task_id %}
-        <div class="badge badge-warning">Статус: {{ status }}</div>
-        <div class="badge badge-info">Урок с id: {{ lesson_id }}</div>
-        <div class="badge badge-info">Task_ID: {{ task_id }}</div>
-            <td {% if status == "SUCCESS" %}hx-trigger="success" hx-get="none"
-                {% elif status == "FAILURE" %}hx-trigger="failure" hx-get="none"
-                {% else %}
-                    hx-get="{% url 'lessons:task_status' task_id %}"
-                    hx-trigger="load, every 2s"
-                {% endif %}
-    {#                hx-target="backup-{{ backup.id }}"#}
-                hx-trigger="load, every 2s"
-{#                hx-indicator="#loading_dots"#}
-                hx-on::success="task-status-info.close(); this.reset();"
+{% partialdef task-status-info %}
+    <div class="badge badge-warning">Статус: {{ status }}</div>
+    <div class="badge badge-info">Урок с id: {{ lesson_id }}</div>
+    <div class="badge badge-info">Task_ID: {{ task_id }}</div>
+    <div id="task-status-info" class="mt-2"
+       {% if status == "SUCCESS" %}hx-trigger="success" hx-get="none"
+       {% elif status == "FAILURE" %}hx-trigger="failure" hx-get="none"
+       {% else %}
+            hx-get="{% url 'lessons:task_status' task_id %}"
+            hx-indicator="#loading_bars"
+            hx-trigger="load, every 5s"
+            hx-target="this"
+            hx-swap="innerHTML"
+       {% endif %}
+       >
+    </div>
+{% endpartialdef task-status-info %}
+{% if task_id %}
+    {% partial task-status-info %}
+{% endif %}
+{#                hx-on::success="task-status-info.close(); this.reset();"#}
 {#                hx-on::create_run=#}
 {#                hx-on::afterRequest="window.location.href='{% url 'lessons:task_status' task_id %}'"#}
-{#                hx-target="this"#}
-{#                hx-swap="innerHTML"#}
-                hx-swap="outerHTML every 2s"
-            >
-                {% include 'lessons/partials/indicator_balls.html' %} {{ task_result }}
-            </td>
-       {% else %}
-            <!-- Задача завершена, опрос прекращён -->
-       {% endif %}
-    {% endpartialdef task-status-info %}
-</span>
 {#        {% if task_id %}#}
 {#        <div id="task-status" hx-get="{% url 'task_status' task_id %}" hx-trigger="load, every 5s[!this.classList.contains('task-complete')]" hx-target="this" hx-swap="innerHTML">#}
 {#            <p>Статус задачи: Загрузка...</p>#}

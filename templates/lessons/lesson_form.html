@@ -51,11 +51,6 @@
             {% endif %}
         {% endfor %}
     <button type="submit" class="btn btn-primary btn-sm hover:bg-amber-600 mt-3 mx-auto text-sm">Создать урок</button>
-    <div id="task-status-container" class="mt-2">
-    {% if task_id %}
-        {% include 'lessons/partials/task_status.html' with task_id=task_id %}
-    {% endif %}
-    </div>
     </div>
     <div class="form-column">
         {% for field in form %}

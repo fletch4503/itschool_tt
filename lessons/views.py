@@ -120,7 +120,9 @@ class LessonCreateView(CreateView):
             )
             response["HX-Reswap"] = "outerHTML"
             return HttpResponseRedirect(
-                reverse_lazy("task_status", kwargs={"task_id": task.id})
+                reverse_lazy(
+                    "task_status", kwargs={"task_id": task.id, "lesson_id": lesson.id}
+                )
             )
         else:
             log.warning("Вышли из FormValid")
@@ -131,20 +133,20 @@ class LessonCreateView(CreateView):
 #     def get(self, request, task_id):
 @counter
 @require_http_methods(["GET"])
-def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
+# def task_status(request, task_id, lesson_id):
+def task_status(request: HtmxHttpRequest, task_id, lesson_id) -> HttpResponse:
     global count_status
     count_status += 1
     task_id = request.GET.get("task_id") or task_id
-    lesson_id = request.session.get("lesson_id")
+    lesson_id = request.GET.get("lesson_id") or lesson_id
     # template_name = "lessons/lesson_form.html#task-status-info"
-    template_name = "lessons/partials/task_status.html#task-status-info"
+    template_name = "lessons/partials/task_status.html"
     if request.htmx:
         log.warning(
             "Итерация %s, task_id: %s, lesson_id: %s", count_status, task_id, lesson_id
         )
-        # template_name += "#task-status-info"
+        template_name += "#task-status-info"
     res = AsyncResult(task_id, app=current_app)
-    log.warning("Текущий статус %s", res.state)
     context = {
         "task_id": task_id,
         "lesson_id": lesson_id,
@@ -160,7 +162,7 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
         # Очищаем task_id и lesson_id из сессии когда задача завершена
         # request.session.pop("task_id", None)
         # request.session.pop("lesson_id", None)
-        log.warning("Отправляем в форму контекст %s", context)
+        log.warning("Текущий статус: %s и контекст: %s", res.state, context)
         return HttpResponseClientRefresh()
     elif res.state == "FAILURE":
         count_status = 0
@@ -170,11 +172,11 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
         # Очищаем task_id и lesson_id из сессии при ошибке
         request.session.pop("task_id", None)
         request.session.pop("lesson_id", None)
-        log.warning("Отправляем в форму контекст %s", context)
+        log.warning("Текущий статус: %s и контекст: %s", res.state, context)
         return HttpResponseClientRefresh()
     else:
         response = render(request, template_name=template_name, context=context)
-        log.warning("Отправляем в форму контекст %s", context)
+        log.warning("Текущий статус: %s и контекст: %s", res.state, context)
         return response
 
 

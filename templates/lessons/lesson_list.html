@@ -25,7 +25,9 @@
             <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок</h2>
             <div id="lesson-form-container">
                 {% include 'lessons/lesson_form.html' %}
-{#                {% include 'lessons/partials/task_status.html' %}#}
+            <div id="task-status-container" class="mt-2">
+                {% include 'lessons/partials/task_status.html' %}
+            </div>
             </div>
         </div>
         <h1 class="text-xl font-bold shadow-md pb-2">Список уроков</h1>

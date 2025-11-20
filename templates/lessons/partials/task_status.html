@@ -10,11 +10,13 @@
                 {% elif status == "FAILURE" %}hx-trigger="failure" hx-get="none"
                 {% else %}
                     hx-get="{% url 'lessons:task_status' task_id %}"
+                    hx-trigger="load, every 2s"
                 {% endif %}
     {#                hx-target="backup-{{ backup.id }}"#}
                 hx-trigger="load, every 2s"
 {#                hx-indicator="#loading_dots"#}
                 hx-on::success="task-status-info.close(); this.reset();"
+{#                hx-on::create_run=#}
 {#                hx-on::afterRequest="window.location.href='{% url 'lessons:task_status' task_id %}'"#}
 {#                hx-target="this"#}
 {#                hx-swap="innerHTML"#}

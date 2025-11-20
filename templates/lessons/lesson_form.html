@@ -4,7 +4,7 @@
 {#      method="post"#}
       hx-post="{% url 'lessons:lesson_create' %}"
 {#      hx-target="#lessons-tbody"#}
-{#      hx-target="#task-status-info"#}
+      hx-target="#task-status-info"
       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
       hx-indicator="#loading_bars"
       hx-on::create_run="this.reset();"

@@ -156,8 +156,8 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
     task_id = request.GET.get("task_id") or task_id
     # lesson = request.GET.get("lesson") or lesson
     # template_name = "lessons/lesson_form.html#task-status-info"
-    template_name = "lessons/partials/task_status.html"
-    # template_name = "lessons/lesson_list.html"
+    # template_name = "lessons/partials/task_status.html"
+    template_name = "lessons/lesson_list.html"
     if request.htmx:
         log.warning("Итерация %s, task_id: %s", count_status, task_id)
         template_name += "#task-status-info"

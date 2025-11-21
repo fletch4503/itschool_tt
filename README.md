@@ -151,6 +151,7 @@ UV - это быстрый менеджер зависимостей для Pyth
 
 4. Запустите приложение:
    ```bash
+   uv run python manage.py makemigrations
    uv run python manage.py migrate
    uv run python manage.py create_test_data
    uv run python manage.py runserver
@@ -164,3 +165,4 @@ UV - это быстрый менеджер зависимостей для Pyth
 - `uv run python manage.py runserver` - запустить сервер разработки
 - `docker-compose down` - остановить и удалить контейнеры
 - `docker-compose logs` - просмотреть логи сервисов
+- `uv run python manage.py update_lesson_statuses` - обновить текущие статусы уроков (от сегодняшней даты)

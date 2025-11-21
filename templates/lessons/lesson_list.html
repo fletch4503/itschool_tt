@@ -44,7 +44,9 @@
             {% partialdef lessons-tbody inline %}
                 {% for lesson in lessons %}
                     {% include "lessons/partials/lesson_row.html" %}
-                {% endfor %}
+            {% empty %}
+                <tr><td colspan="6" class="text-center">Нет доступных Уроков</td></tr>
+            {% endfor %}
             {% endpartialdef lessons-tbody %}
             </tbody>
         </table>

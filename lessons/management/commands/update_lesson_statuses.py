@@ -10,17 +10,17 @@ class Command(BaseCommand):
         now = timezone.now()
         updated_count = 0
 
-        # Обновить завершенные занятия
-        completed_lessons = Lesson.objects.filter(scheduled_at__lt=now).exclude(
-            status="completed"
-        )
-        for lesson in completed_lessons:
-            lesson.status = "completed"
-            lesson.save()
-            updated_count += 1
+        # # Обновить завершенные занятия
+        # completed_lessons = Lesson.objects.filter(scheduled_at__lt=now).exclude(
+        #     status="completed"
+        # )
+        # for lesson in completed_lessons:
+        #     lesson.status = "completed"
+        #     lesson.save()
+        #     updated_count += 1
 
         # Обновить ожидающие занятия
-        pending_lessons = Lesson.objects.filter(scheduled_at__gte=now).exclude(
+        pending_lessons = Lesson.objects.filter(scheduled_at__lt=now).exclude(
             status="pending"
         )
         for lesson in pending_lessons:

@@ -159,7 +159,7 @@ class Command(BaseCommand):
 
         # Создать дополнительные уроки
         for _ in range(20):
-            scheduled_at = fake.date_time_this_year()
+            scheduled_at = timezone.make_aware(fake.date_time_this_year())
             status = "completed" if scheduled_at < timezone.now() else "pending"
             duration = timezone.timedelta(hours=random.randint(1, 3))  # 1-3 часа
 

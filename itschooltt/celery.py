@@ -18,6 +18,5 @@ log.info(
     settings.CELERY_RESULT_BACKEND,
     settings.CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP,
 )
-# current_app.config_from_object("django.conf:settings", namespace="CELERY")
 
 current_app.autodiscover_tasks()

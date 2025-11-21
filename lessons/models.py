@@ -46,18 +46,34 @@ class Lesson(models.Model):
         ("created", "Создан"),
         ("completed", "Завершен"),
     ]
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
-    students = models.ManyToManyField(Student, blank=True)
-    scheduled_at = models.DateTimeField(default="2026-02-12 12:00")
+    title = models.CharField(max_length=200, verbose_name="Урок:")
+    description = models.TextField(verbose_name="Описание Урока:")
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, verbose_name="Предмет:"
+    )
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.CASCADE, verbose_name="Преподаватель:"
+    )
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Группа Студентов:",
+    )
+    students = models.ManyToManyField(Student, blank=True, verbose_name="Студенты:")
+    scheduled_at = models.DateTimeField(
+        default="2026-02-12 12:00", verbose_name="Запланировано на:"
+    )  # Только для примера задано значение по умолчанию
     duration = models.DurationField(
-        default="01:00:00"
+        default="01:00:00", verbose_name="Длительность урока:"
     )  # Длительность урока по умолчанию 1 час
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending",
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Урок:")
 
     def __str__(self):
         return self.title

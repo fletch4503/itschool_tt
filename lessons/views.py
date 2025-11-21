@@ -4,14 +4,11 @@ from django.views.generic import (
     ListView,
     CreateView,
     UpdateView,
-    # View,
 )
 from django.urls import reverse_lazy
 from django.core.cache import cache
 from django.views.decorators.http import (
     require_http_methods,
-    # require_POST,
-    # require_GET,
 )
 from django_htmx.http import HttpResponseClientRefresh
 from django_htmx.middleware import HtmxDetails
@@ -22,13 +19,9 @@ from celery.result import AsyncResult
 from django.http import (
     HttpResponse,
     HttpRequest,
-    # HttpResponseRedirect,
 )
 from itschooltt.celery import current_app
 import time
-
-# from django.contrib import messages
-
 
 count_status = 0
 
@@ -51,6 +44,10 @@ class HtmxHttpRequest(HttpRequest):
 
 
 class LessonListView(ListView):
+    """
+    Отображаем список уроков на главной странице
+    """
+
     model = Lesson
     template_name = "lessons/lesson_list.html"
     context_object_name = "lessons"
@@ -76,25 +73,18 @@ class LessonListView(ListView):
         task_id = self.request.session.get("task_id")
         context["task_id"] = task_id
         log.info("Передаем в lesson_list.html task_id: %s", task_id)
-        # self.request.session.pop("task_id", None)
-        # if task_id:
-        #     res = AsyncResult(task_id, app=current_app)
-        #     context["status"] = res.state
-        #     context["lesson_id"] = self.request.session.get("lesson_id")
         return context
 
 
 class LessonCreateView(CreateView):
+    """
+    Создаем новый урок
+    """
+
     model = Lesson
     form_class = LessonForm
     template_name = "lessons/partials/lesson_row.html"
     success_url = reverse_lazy("lessons:lesson_list")
-    # def dispatch(self, request, *args, **kwargs):
-    #     log.info(
-    #         f"LessonCreateView dispatch: method={request.method}, htmx={getattr(request, 'htmx', None)}"
-    #     )
-    #     return super().dispatch(request, *args, **kwargs)
-    #
 
     def form_valid(self, form):
         cache.clear()
@@ -112,11 +102,9 @@ class LessonCreateView(CreateView):
             log.error(f"Не получили результата из Celery c ошибкой: {e}")
         res = AsyncResult(task.id, app=current_app)
         context = {
-            # "form": form,
             "task_id": task.id,
             "lesson_id": lesson_id,
             "lesson": lesson,
-            # "status": res.state,
             "status": "Отправляем уведомления",
             "HX-Trigger": "create_run",
         }
@@ -124,7 +112,6 @@ class LessonCreateView(CreateView):
         response = render(
             self.request,
             self.template_name,
-            # "lessons/partials/task_status.html",
             context,
         )
         response["HX-Trigger"] = "create_run"
@@ -132,21 +119,16 @@ class LessonCreateView(CreateView):
         self.request.session["status"] = res.state
         self.request.session["lesson_id"] = lesson_id
         self.request.session["task_result"] = 1
-        # if res.state in ["PENDING", "PROGRESS"]:
-        #     return HttpResponseRedirect(
-        #         reverse_lazy("lessons:task_status", kwargs={"task_id": task.id})
-        #     )
-        # else:
         log.info("Выходим из FormValid")
         return HttpResponseClientRefresh()
-        # return response
 
 
-# class TaskStatusView(View):
-#     def get(self, request, task_id):
 @counter
 @require_http_methods(["GET"])
 def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
+    """
+    Отображаем статус отправки уведомлений ученикам после создания урока
+    """
     global count_status
     count_status += 1
     task_id = request.GET.get("task_id") or task_id
@@ -163,8 +145,6 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
             extstatus,
             res.state,
         )
-        # template_name += "#task-status-info"
-
     context = {
         "task_id": task_id,
         "lesson_id": lesson_id,
@@ -195,12 +175,17 @@ def task_status(request: HtmxHttpRequest, task_id) -> HttpResponse:
         return HttpResponseClientRefresh()
     else:
         response = render(request, template_name=template_name, context=context)
-        # log.warning("Текущий статус: %s и контекст: %s", res.state, context)
         log.warning("Отправляем в форму контекст %s", context)
         return response
 
 
 class LessonCompleteView(UpdateView):
+    """
+    Вручную меняем статус урока на 'Завершен'.
+    Для полного функционала нужна отдельная задача в Celery-beat, отслеживающая
+    даты уроков по отношению к текущей и изменяющая статус, если дата 'просрочена'
+    """
+
     model = Lesson
     fields = []
     success_url = reverse_lazy("lessons:lesson_list")

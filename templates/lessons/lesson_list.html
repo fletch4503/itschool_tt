@@ -6,26 +6,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Уроки</title>
-{#    <script src="https://unpkg.com/htmx.org@1.9.10"></script>#}
-{#    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.js"#}
-{#            integrity="sha384-ksKjJrwjL5VxqAkAZAVOPXvMkwAykMaNYegdixAESVr+KqLkKE8XBDoZuwyWVUDv"#}
-{#            crossorigin="anonymous">#}
-{#    </script>#}
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"
             integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz"
             crossorigin="anonymous">
     </script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />  {# Подключаем DaisyUI #}
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> {# DaisyUI - составляющая TailwindCSS #}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">  {# Подключаем свои стили #}
     <meta name="htmx-config" content='{"includeIndicatorStyles": true}'>
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <div class="w-full pt-1">
         <div class="form-section mt-1 shadow-md">
-            <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок</h2>
-            {% include 'lessons/partials/indicator_bars.html' %}
-            {% if task_id %}{% include 'lessons/partials/task_status.html' %}{% endif %}
+            <h2 class="text-xl text-centered font-bold text-gray-800">Создать новый урок
+            &nbsp;&nbsp;{% if task_id %}{% include 'lessons/partials/task_status.html' %}{% endif %}
+            </h2>
             <div id="lesson-form-container">
                 {% include 'lessons/lesson_form.html' %}
             </div>
@@ -54,6 +49,5 @@
             </tbody>
         </table>
     </div>
-{#<script src="{% static 'js/htmx.min.js' %}"></script>#}
 </body>
 </html>

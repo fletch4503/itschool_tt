@@ -23,6 +23,9 @@ class LessonForm(forms.ModelForm):
                 attrs={"type": "datetime-local", "placeholder": "Выберите дату и время"}
             ),
             "duration": TimeInput(
-                attrs={"type": "time-local", "placeholder": "Выберите продолжительность"}
+                attrs={
+                    "type": "time-local",
+                    "placeholder": "Выберите продолжительность",
+                }
             ),
         }

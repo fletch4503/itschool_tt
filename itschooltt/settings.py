@@ -146,8 +146,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Celery Configuration
 CELERY_BROKER_URL = "redis://localhost:6379/0"
-# CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_BACKEND = "django-db"  # Отслеживаем результаты в базе
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_SOFT_TIME_LIMIT = 1800  # 30 minutes
@@ -176,25 +175,18 @@ LOGGING = {
         "verbose": {
             "format": "[%(asctime)s] %(module)s:%(lineno)d %(funcName)4s %(levelname)-3s %(message)s",
             "datefmt": "%y-%m-%d %H:%M:%S",
-            # "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            # "style": "{",
         },
         "color_formatter": {
             "()": "colorlog.ColoredFormatter",
             "format": "%(log_color)3s %(module)s:%(lineno)d %(levelname)-3s %(funcName)4s %(name)s -> %(message)4s",
-            # "format": "{asctime} {module}:{lineno} {funcName} {levelname} {message}",
             "datefmt": "%y-%m-%d %H:%M:%S",
             "log_colors": {
                 "DEBUG": "cyan",
                 "INFO": "fg_green",
-                # light_black, light_red, light_green, light_yellow, light_blue, light_purple, light_cyan, light_white
-                # black, red, green, yellow, blue, purple, cyan, white
-                # fg_{color} — цвет переднего плана (текста) bg_{color} — цвет фона
                 "WARNING": "purple",
                 "ERROR": "red",
                 "CRITICAL": "red,bg_white",
             },
-            # "style": "{",
         },
     },
     "handlers": {

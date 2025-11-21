@@ -1,16 +1,8 @@
 {% load static %}
-{% load partials %}
 <form class="overflow-y-clip mb-2"
-{#      method="post"#}
       hx-post="{% url 'lessons:lesson_create' %}"
-{#      hx-target="#lessons-tbody"#}
-{#      hx-target="#task-status-info"#}
-{#      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'#}
       hx-indicator="#loading_bars"
-{#      hx-on::create_run="this.reset();"#}
-{#      hx-on:create_run="this.reset();"#}
       hx-swap="innerHTML"
-{#      hx-swap="afterbegin"#}
     >
     {% csrf_token %}
     {% if form.non_field_errors %}
@@ -54,12 +46,11 @@
             {% endif %}
         {% endfor %}
         <button type="submit" class="btn btn-primary btn-sm hover:bg-amber-600 mt-3 mx-auto text-sm">Создать урок
-        </button>
+        </button>&nbsp;{% include 'lessons/partials/indicator_bars.html' %}
     </div>
     <div class="form-column">
         {% for field in form %}
             {% if field.name in 'description, duration' %}
-{#            {% if field.name in 'subject, teacher, group, students' %}#}
                 <div class="form-group">
                     {% if field.label %}
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
